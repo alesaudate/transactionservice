@@ -1,0 +1,26 @@
+version: "3"
+
+services:
+  database:
+    image: mysql:8.0.28
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_DATABASE: "transactions"
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 45s
+      interval: 10s
+      retries: 10
+
+
+  app:
+    image: alesaudate/transactionservice:latest
+    ports:
+      - 8080:8080
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      database:
+        condition: service_healthy
